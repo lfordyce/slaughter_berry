@@ -11,10 +11,14 @@ pub struct LoadingPlugin;
 impl Plugin for LoadingPlugin {
     fn build(&self, app: &mut App) {
         app.add_loading_state(
-            LoadingState::new(GameState::Loading).continue_to_state(GameState::Menu),
-        )
-        .add_collection_to_loading_state::<_, AudioAssets>(GameState::Loading)
-        .add_collection_to_loading_state::<_, TextureAssets>(GameState::Loading);
+            LoadingState::new(GameState::Loading)
+                .continue_to_state(GameState::Menu)
+                .with_dynamic_assets_file::<StandardDynamicAssetCollection>(
+                    "textures/april.assets.ron",
+                )
+                .load_collection::<AudioAssets>()
+                .load_collection::<TextureAssets>(),
+        );
     }
 }
 
@@ -29,8 +33,20 @@ pub struct AudioAssets {
 
 #[derive(AssetCollection, Resource)]
 pub struct TextureAssets {
+    #[asset(key = "april")]
+    pub april: Handle<TextureAtlas>,
     #[asset(path = "textures/bevy.png")]
     pub bevy: Handle<Image>,
     #[asset(path = "textures/github.png")]
     pub github: Handle<Image>,
+    #[asset(path = "textures/Level07_Scene01_Ground.png")]
+    pub ground: Handle<Image>,
+    #[asset(path = "textures/Level07_Scene01_Buildings01.png")]
+    pub buildings_fg: Handle<Image>,
+    #[asset(path = "textures/Level07_Scene01_Buildings01.png")]
+    pub buildings_bg: Handle<Image>,
+    #[asset(path = "textures/Level07_Scene01_Sky.png")]
+    pub sky: Handle<Image>,
+    #[asset(path = "textures/Level07_Scene01_Trees.png")]
+    pub tree: Handle<Image>,
 }

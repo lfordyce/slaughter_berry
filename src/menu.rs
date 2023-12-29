@@ -1,6 +1,10 @@
 use crate::loading::TextureAssets;
 use crate::GameState;
 use bevy::prelude::*;
+use bevy_parallax::{
+    CreateParallaxEvent, LayerData, LayerRepeat, LayerSpeed, ParallaxCameraComponent,
+    RepeatStrategy,
+};
 
 pub struct MenuPlugin;
 
@@ -32,9 +36,69 @@ impl Default for ButtonColors {
 #[derive(Component)]
 struct Menu;
 
-fn setup_menu(mut commands: Commands, textures: Res<TextureAssets>) {
+fn setup_menu(
+    mut commands: Commands,
+    textures: Res<TextureAssets>,
+    mut create_parallax: EventWriter<CreateParallaxEvent>,
+) {
     info!("menu");
-    commands.spawn(Camera2dBundle::default());
+    let camera = commands
+        .spawn(Camera2dBundle::default())
+        // .spawn(Camera2dBundle {
+        //     transform: Transform::from_xyz(256., -144., 0.),
+        //     ..Default::default()
+        // })
+        .insert(ParallaxCameraComponent::default())
+        .id();
+
+    create_parallax.send(CreateParallaxEvent {
+        layers_data: vec![
+            LayerData {
+                speed: LayerSpeed::Bidirectional(0.9, 0.9),
+                repeat: LayerRepeat::horizontally(RepeatStrategy::Mirror),
+                path: "textures/Level07_Scene01_Sky.png".to_string(),
+                tile_size: Vec2::new(1824.0, 112.0),
+                cols: 1,
+                rows: 1,
+                z: -2.,
+                position: Vec2::new(0., 144. - (112.0 / 2.)),
+                ..default()
+            },
+            LayerData {
+                speed: LayerSpeed::Bidirectional(0.7, 0.7),
+                repeat: LayerRepeat::horizontally(RepeatStrategy::Mirror),
+                path: "textures/Level07_Scene01_Buildings02.png".to_string(),
+                tile_size: Vec2::new(2416.0, 112.0),
+                cols: 1,
+                rows: 1,
+                z: -1.5,
+                position: Vec2::new(0., 144. - (112.0 / 2.)),
+                ..default()
+            },
+            LayerData {
+                speed: LayerSpeed::Bidirectional(0.6, 0.8),
+                repeat: LayerRepeat::horizontally(RepeatStrategy::Mirror),
+                path: "textures/Level07_Scene01_Buildings01.png".to_string(),
+                tile_size: Vec2::new(2416.0, 248.0),
+                z: -0.5,
+                position: Vec2::new(0., 144. - (248.0 / 2.)),
+                ..default()
+            },
+            LayerData {
+                speed: LayerSpeed::Bidirectional(0.3, 0.4),
+                repeat: LayerRepeat::horizontally(RepeatStrategy::Mirror),
+                path: "textures/Level07_Scene01_Trees.png".to_string(),
+                tile_size: Vec2::new(168.0, 136.0),
+                cols: 1,
+                rows: 1,
+                z: -0.3,
+                position: Vec2::new(0., 0.),
+                ..default()
+            },
+        ],
+        camera,
+    });
+
     commands
         .spawn((
             NodeBundle {
